@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steady: care-home fall triage</title>
+<meta name="description" content="Steady is a fall-detection wearable and a night-shift dashboard for care homes. It shortens the wait between a fall and a person at the bedside, and sorts every fall by urgency.">
+<meta name="theme-color" content="#0f0f10">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Steady: care-home fall triage">
+<meta property="og:description" content="81% of care-home falls are unwitnessed. Steady shortens the wait between a fall and a person at the bedside.">
+<meta property="og:image" content="assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0f0f10;
+    --raised: #19191b;
+    --raised-2: #212124;
+    --line: #2b2b2f;
+    --fg: #f1f1f2;
+    --fg-2: #b4b4ba;
+    --fg-3: #85858d;
+    --red: #ef5260;
+    --amber: #f5a524;
+    --teal: #3cc4a6;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { max-width: 100%; height: auto; display: block; }
+  .wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
+  .mono { font-family: var(--mono); }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin: 0 0 14px;
+  }
+  h1, h2, h3, p { margin-top: 0; }
+  h2 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; font-weight: 600; margin-bottom: 14px; letter-spacing: -.01em; }
+  h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  section { padding: 84px 0; border-top: 1px solid var(--line); }
+  .lede { color: var(--fg-2); max-width: 62ch; font-size: 18px; }
+  .src { font-family: var(--mono); font-size: 12.5px; color: var(--fg-3); margin-top: 18px; }
+
+  /* nav */
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15,15,16,.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; text-decoration: none; font-size: 18px; }
+  .brand svg { color: var(--teal); }
+  .links { display: flex; align-items: center; gap: 22px; font-size: 15px; color: var(--fg-2); }
+  .links a { text-decoration: none; }
+  .links a:hover { color: var(--fg); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--raised);
+    color: var(--fg); text-decoration: none; font-weight: 500; font-size: 15px;
+  }
+  .btn:hover { background: var(--raised-2); }
+  .btn.primary { background: var(--fg); color: #0f0f10; border-color: var(--fg); }
+  .btn.primary:hover { background: #fff; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 6px; }
+
+  /* hero */
+  .hero { padding: 88px 0 72px; border-top: 0; }
+  .big {
+    font-family: var(--mono); font-weight: 500;
+    font-size: clamp(96px, 22vw, 208px);
+    line-height: .95; letter-spacing: -.04em; color: var(--red);
+    margin: 0 0 12px;
+  }
+  .hero h1 { font-size: clamp(26px, 4vw, 38px); font-weight: 400; line-height: 1.25; margin-bottom: 14px; }
+  .hero .tag { color: var(--teal); font-size: clamp(18px, 2.2vw, 21px); max-width: 52ch; margin-bottom: 30px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  /* cards */
+  .grid { display: grid; gap: 14px; }
+  .grid.three { grid-template-columns: repeat(3, 1fr); }
+  .card { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .stat { font-family: var(--mono); font-size: 52px; line-height: 1; color: var(--fg); margin-bottom: 12px; }
+  .card p { margin: 0; color: var(--fg-2); font-size: 16px; }
+  .quote {
+    margin-top: 26px; font-size: clamp(20px, 2.6vw, 26px); font-weight: 500;
+    padding-left: 18px; border-left: 3px solid var(--red);
+  }
+
+  /* comparison */
+  .compare { margin-top: 30px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 1.1fr 2fr 1.3fr; gap: 20px; padding: 18px 22px; background: var(--raised); }
+  .row + .row { border-top: 1px solid var(--line); }
+  .row.head { background: var(--bg); font-family: var(--mono); font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); padding-block: 12px; }
+  .row b { font-weight: 600; }
+  .row span { color: var(--fg-2); font-size: 16px; }
+  .row .gap { color: var(--amber); }
+  .conclusion { margin-top: 22px; font-weight: 500; }
+
+  /* claims */
+  .claims { margin-top: 30px; display: grid; gap: 12px; }
+  .claim { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .claim > div { background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; color: var(--fg-2); font-size: 16px; }
+  .claim > div:last-child { border-left: 3px solid var(--teal); color: var(--fg); }
+  .legend { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--raised); font-weight: 500; font-size: 15px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.red { background: var(--red); } .dot.amber { background: var(--amber); } .dot.teal { background: var(--teal); }
+
+  /* flow */
+  .label { font-family: var(--mono); font-size: 12.5px; letter-spacing: .14em; color: var(--fg-3); text-transform: uppercase; margin: 34px 0 12px; }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; }
+  .node {
+    position: relative; text-align: center; padding: 16px 12px;
+    background: var(--raised); border: 1.5px solid var(--teal); border-radius: 12px;
+  }
+  .node.amber { border-color: var(--amber); } .node.red { border-color: var(--red); } .node.grey { border-color: var(--line); }
+  .node b { display: block; font-weight: 600; font-size: 17px; }
+  .node small { display: block; color: var(--fg-3); font-family: var(--mono); font-size: 12.5px; margin-top: 2px; }
+  .flow .node:not(:last-child)::after {
+    content: ""; position: absolute; top: 50%; right: -26px; width: 18px; height: 2px; background: var(--fg-3);
+  }
+  .flow .node:not(:last-child)::before {
+    content: ""; position: absolute; top: calc(50% - 4px); right: -26px; width: 8px; height: 8px;
+    border-top: 2px solid var(--fg-3); border-right: 2px solid var(--fg-3); transform: rotate(45deg); transform-origin: center;
+    margin-right: -2px;
+  }
+  .triage { display: grid; grid-template-columns: .8fr 1.5fr 1.5fr .9fr; gap: 14px 30px; align-items: center; }
+  .triage .fall { grid-row: 1 / span 3; }
+  .triage .close { grid-row: 1 / span 3; grid-column: 4; }
+  .triage .cause { grid-column: 2; } .triage .tier { grid-column: 3; }
+  .steps { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .step { counter-increment: s; }
+  .step::before { content: counter(s, decimal-leading-zero); font-family: var(--mono); color: var(--teal); font-size: 14px; display: block; margin-bottom: 8px; }
+  .steps { counter-reset: s; }
+
+  /* product shots */
+  .shots { margin-top: 34px; display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
+  figure { margin: 0; }
+  .frame { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--raised); box-shadow: 0 18px 50px rgba(0,0,0,.45); }
+  .frame .bar { display: flex; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .frame .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  figcaption { margin-top: 10px; font-size: 14px; color: var(--fg-3); }
+
+  /* hardware */
+  .specs { margin-top: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .specs .card h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .tagline { font-family: var(--mono); font-size: 12px; color: var(--teal); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* honest */
+  .honest .card { border-top: 3px solid var(--teal); }
+  .honest .card.sim { border-top-color: var(--amber); }
+  .honest .card.not { border-top-color: var(--red); }
+  .honest .card h3 { font-family: var(--mono); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+  .honest .card.real h3 { color: var(--teal); } .honest .card.sim h3 { color: var(--amber); } .honest .card.not h3 { color: var(--red); }
+  .fine { margin-top: 18px; color: var(--fg-2); }
+
+  /* close */
+  .closing { text-align: center; padding: 110px 0; }
+  .closing p.big2 { font-size: clamp(30px, 5.2vw, 54px); line-height: 1.15; font-weight: 600; letter-spacing: -.015em; margin: 0 auto 14px; max-width: 24ch; text-wrap: balance; }
+  .closing p.sub { color: var(--teal); font-size: clamp(18px, 2.4vw, 24px); max-width: 34ch; margin: 0 auto; }
+
+  footer { border-top: 1px solid var(--line); padding: 44px 0 60px; color: var(--fg-3); font-size: 14.5px; }
+  footer .cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; }
+  footer h4 { margin: 0 0 10px; font-family: var(--mono); font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-2); font-weight: 500; }
+  footer ul { margin: 0; padding: 0; list-style: none; }
+  footer li { margin-bottom: 6px; }
+  footer a { color: var(--fg-2); }
+  .disclaimer { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 860px) {
+    section { padding: 64px 0; }
+    .links a.hide-m { display: none; }
+    .grid.three, .specs, .steps, .shots, footer .cols { grid-template-columns: 1fr; }
+    .claim { grid-template-columns: 1fr; }
+    .row { grid-template-columns: 1fr; gap: 6px; }
+    .row.head { display: none; }
+    .row .what::before, .row .gap::before { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
+    .row .what::before { content: "Approach"; }
+    .row .gap::before { content: "Gap it leaves"; }
+    .row .data::before { display: block; content: "What the data says"; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
+    .flow { grid-template-columns: 1fr; gap: 30px; }
+    .flow .node:not(:last-child)::after { top: auto; bottom: -26px; right: 50%; width: 2px; height: 18px; }
+    .flow .node:not(:last-child)::before { top: auto; bottom: -26px; right: calc(50% - 3px); margin: 0; transform: rotate(135deg); }
+    .triage { grid-template-columns: 1fr; gap: 10px; }
+    .triage .fall, .triage .close { grid-row: auto; grid-column: auto; }
+    .triage .cause, .triage .tier { grid-column: auto; }
+    .triage .tier { margin-bottom: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Steady, back to top">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+      Steady
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a class="hide-m" href="#problem">Problem</a>
+      <a class="hide-m" href="#how">How it works</a>
+      <a class="hide-m" href="#product">Product</a>
+      <a class="hide-m" href="#hardware">Hardware</a>
+      <a class="hide-m" href="#limits">Honest limits</a>
+      <a class="btn" href="https://github.com/Arshyi/Steady">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kicker">Steady · care-home fall triage</p>
+    <p class="big" aria-hidden="true">81%</p>
+    <h1>of care-home falls are unwitnessed.</h1>
+    <p class="tag">Steady shortens the wait between a fall and a person at the bedside.</p>
+    <div class="cta">
+      <a class="btn primary" href="#how">See how it works</a>
+      <a class="btn" href="#product">See the dashboard</a>
+    </div>
+    <p class="src">Mayes et al., JAMDA 2026 · 212 falls</p>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="wrap">
+    <p class="kicker">Problem</p>
+    <h2>The fall is survivable. The wait is what kills.</h2>
+    <div class="grid three" style="margin-top:28px">
+      <div class="card"><div class="stat">½</div><p>of people who lay over an hour died within 6 months (1981 cohort, 20 long lies).</p></div>
+      <div class="card"><div class="stat">30%</div><p>of fallers over 90 lay there an hour or more.</p></div>
+      <div class="card"><div class="stat">80%</div><p>of those fallers could not get up unaided.</p></div>
+    </div>
+    <p class="quote">They had call alarms. The alarms were not used.</p>
+    <p class="src">Wild et al., BMJ 1981 · Fleming &amp; Brayne, BMJ 2008</p>
+  </div>
+</section>
+
+<section id="today">
+  <div class="wrap">
+    <p class="kicker">What exists today</p>
+    <h2>What exists today, measured</h2>
+    <div class="compare" role="table" aria-label="Existing approaches to fall response">
+      <div class="row head" role="row"><span role="columnheader">Approach</span><span role="columnheader">What the data says</span><span role="columnheader">Gap it leaves</span></div>
+      <div class="row" role="row"><span class="what" role="cell"><b>Pendant button</b></span><span class="data" role="cell">24% never wear it; 83% of lone fallers who lay over 5 min never pressed it.</span><span class="gap" role="cell">Needs a conscious press</span></div>
+      <div class="row" role="row"><span class="what" role="cell"><b>Bed-exit alarms</b></span><span class="data" role="cell">Over 80% of alerts false in a large hospital study.</span><span class="gap" role="cell">Noise, not priority</span></div>
+      <div class="row" role="row"><span class="what" role="cell"><b>Nurse-call and clinical alarms</b></span><span class="data" role="cell">72–99% false; 74–99% non-actionable.</span><span class="gap" role="cell">Staff delay or disable them</span></div>
+      <div class="row" role="row"><span class="what" role="cell"><b>Consumer watch</b></span><span class="data" role="cell">Real-world accuracy below lab accuracy; must be worn and charged.</span><span class="gap" role="cell">Must be worn every night</span></div>
+    </div>
+    <p class="conclusion">These tools stop at detection or noise. None solves response.</p>
+    <p class="src">Heinbüchner 2010 (52 pendant users) · Wen 2024 · Sendelbach &amp; Funk 2013 · Chaudhuri 2015</p>
+  </div>
+</section>
+
+<section id="unique">
+  <div class="wrap">
+    <p class="kicker">What’s unique</p>
+    <h2>Three claims, each measurable</h2>
+    <div class="claims">
+      <div class="claim"><div>83% of lone fallers never pressed the alarm.</div><div>The board detects the fall. 45 s of stillness raises the top tier by itself.</div></div>
+      <div class="claim"><div>72–99% of alarms are false, so staff delay or disable them.</div><div>Not another siren: every fall is sorted by urgency.</div></div>
+      <div class="claim"><div>An acknowledgement is treated as “handled”.</div><div>It drops to the lowest tier and still needs a visit. Only staff “Mark checked” closes it.</div></div>
+    </div>
+    <div class="legend" aria-label="Urgency tiers, highest first">
+      <span class="pill"><i class="dot red"></i>No movement since the fall</span>
+      <span class="pill"><i class="dot amber"></i>Not acknowledged yet</span>
+      <span class="pill"><i class="dot teal"></i>Says they’re OK</span>
+    </div>
+    <p class="src">Tiers as the dashboard shows them, highest first</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <p class="kicker">Implementation</p>
+    <h2>How it works</h2>
+    <p class="lede">A wearable detects the fall on the device itself. The dashboard decides how urgent it is, and a person has to close it.</p>
+
+    <p class="label">Pipeline</p>
+    <div class="flow">
+      <div class="node"><b>Board</b><small>200 Hz · detects fall</small></div>
+      <div class="node amber"><b>Link</b><small>USB or Wi-Fi</small></div>
+      <div class="node"><b>Server</b><small>stores alerts</small></div>
+      <div class="node amber"><b>Dashboard</b><small>ranks by urgency</small></div>
+    </div>
+
+    <p class="label">Triage</p>
+    <div class="triage">
+      <div class="node grey fall"><b>Fall</b></div>
+      <div class="node red cause"><b>Still 45 s</b></div><div class="node red tier"><b>No movement since the fall</b></div>
+      <div class="node amber cause"><b>No response</b></div><div class="node amber tier"><b>Not acknowledged yet</b></div>
+      <div class="node cause"><b>Button press</b></div><div class="node tier"><b>Says they’re OK</b></div>
+      <div class="node close"><b>Mark checked</b><small>staff close it</small></div>
+    </div>
+
+    <div class="steps">
+      <div class="card step"><h3>Detect</h3><p>The board watches for weightlessness, then a hard impact, then a change of posture, and decides on the device.</p></div>
+      <div class="card step"><h3>Rank</h3><p>Every fall lands on one Alerts list, highest urgency first. The highest tier wins even after a press: lying still matters more than pressing a button.</p></div>
+      <div class="card step"><h3>Close</h3><p>A fall stays until staff mark it checked on the dashboard, or tap an NFC tag at the bedside. “I’m OK” only moves it down the list.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="product">
+  <div class="wrap">
+    <p class="kicker">Product</p>
+    <h2>One screen for the whole night shift</h2>
+    <p class="lede">Staff see who needs a response, who is asleep, and whose device needs attention. Each resident has a page with movement through the night.</p>
+    <div class="shots">
+      <figure>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="assets/dashboard-alerts.png" width="2200" height="1520" alt="The Alerts page. A fall for room 103 is at the top with the badge No movement since the fall and a Mark checked button, above a check for room 105 and two device alerts." loading="lazy"></div>
+        <figcaption>Alerts: the fall sits above everything else, with the reason it is urgent.</figcaption>
+      </figure>
+      <figure>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="assets/dashboard-resident.png" width="2200" height="1520" alt="A resident page showing heart rate, time since last movement, battery, signal, and a movement chart for the night." loading="lazy"></div>
+        <figcaption>Resident view: movement per half hour from the gyroscope, plus device health.</figcaption>
+      </figure>
+    </div>
+    <p class="src">Screenshots show Simulated mode. The residents, heart rate, battery and signal are demo values.</p>
+  </div>
+</section>
+
+<section id="hardware">
+  <div class="wrap">
+    <p class="kicker">Hardware</p>
+    <h2>A real board and a real sensor</h2>
+    <div class="specs">
+      <div class="card"><h3>Arduino UNO Q <span class="tagline">Board</span></h3><p>Runs the fall detector on the device itself, not in the cloud. It has Wi-Fi, 4 GB of RAM and 32 GB of storage on board.</p></div>
+      <div class="card"><h3>MPU6050 <span class="tagline">Sensor</span></h3><p>A real accelerometer and gyroscope, read over I2C at 200 Hz so a landing spike is not missed between samples.</p></div>
+      <div class="card"><h3>USB or Wi-Fi <span class="tagline">Link</span></h3><p>Readings reach the dashboard over USB serial, or through a relay app on the board over the network.</p></div>
+      <div class="card"><h3>Button and NFC <span class="tagline">Acknowledge</span></h3><p>One press says “I’m OK”. A staff tap on an NFC tag records a visit. Neither one hides the fall.</p></div>
+    </div>
+    <p class="fine">Open source. Firmware, relay, server and dashboard are all in the <a href="https://github.com/Arshyi/Steady">GitHub repository</a>.</p>
+  </div>
+</section>
+
+<section id="limits" class="honest">
+  <div class="wrap">
+    <p class="kicker">Viability</p>
+    <h2>Real hardware, honest limits</h2>
+    <div class="grid three" style="margin-top:28px">
+      <div class="card real"><h3>Real today</h3><p>MPU6050 on the UNO Q, fall detection on the board (verified with drops), readings to dashboard to alerts, pairing, Wi-Fi relay, three-tier triage.</p></div>
+      <div class="card sim"><h3>Simulated, and labelled</h3><p>Heart rate, battery, signal, and the other residents, shown only in Simulated mode.</p></div>
+      <div class="card not"><h3>Not proven yet</h3><p>Detection tuned on drops, not people. Databricks not run end to end. The dashboard API is open unless Auth0 staff login is configured.</p></div>
+    </div>
+    <p class="fine">A threshold, not a certified detector. No measured false-positive rate yet.</p>
+    <p class="fine"><b>Next:</b> label real falls and measure false positives, then a staff bedside tap that records a visit.</p>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <p class="big2">Steady does not stop falls.</p>
+    <p class="sub">It makes sure a fall is never waiting for a button press.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h4>Steady</h4>
+        <p style="margin:0 0 10px">Built at HackCamp 2026 by Arshyia Mehran, Nunu Ishaka and Luke Parkinson.</p>
+        <p style="margin:0"><a href="https://github.com/Arshyi/Steady">github.com/Arshyi/Steady</a></p>
+      </div>
+      <div>
+        <h4>Sources</h4>
+        <ul>
+          <li>Mayes et al., JAMDA 2026</li>
+          <li>Wild et al., BMJ 1981 · Fleming &amp; Brayne, BMJ 2008</li>
+          <li>Heinbüchner 2010 · Wen 2024</li>
+          <li>Sendelbach &amp; Funk 2013 · Chaudhuri 2015</li>
+        </ul>
+      </div>
+    </div>
+    <p class="disclaimer">Steady is a hackathon prototype. It is not a medical device and must not be relied on to detect falls or to replace care staff.</p>
+  </div>
+</footer>
+
+</body>
+</html>
