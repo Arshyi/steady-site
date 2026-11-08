@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Steady: care-home fall triage</title>
-<meta name="description" content="Steady is a fall-detection wearable and a night-shift dashboard for care homes. It shortens the wait between a fall and a person at the bedside, and sorts every fall by urgency.">
+<meta name="description" content="Steady is a fall-detection wearable and a night-shift dashboard for care homes. It shortens the wait between a fall and a person at the bedside, and ranks every fall by urgency.">
 <meta name="theme-color" content="#0f0f10">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Steady: care-home fall triage">
@@ -45,7 +45,6 @@
   a { color: inherit; }
   img { max-width: 100%; height: auto; display: block; }
   .wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
-  .mono { font-family: var(--mono); }
   .kicker {
     font-family: var(--mono);
     font-size: 13px;
@@ -60,6 +59,8 @@
   section { padding: 84px 0; border-top: 1px solid var(--line); }
   .lede { color: var(--fg-2); max-width: 62ch; font-size: 18px; }
   .src { font-family: var(--mono); font-size: 12.5px; color: var(--fg-3); margin-top: 18px; }
+  .fine { margin-top: 18px; color: var(--fg-2); }
+  code, .mono { font-family: var(--mono); font-size: .88em; }
 
   /* nav */
   .nav {
@@ -100,13 +101,18 @@
   /* cards */
   .grid { display: grid; gap: 14px; }
   .grid.three { grid-template-columns: repeat(3, 1fr); }
+  .grid.two { grid-template-columns: repeat(2, 1fr); }
   .card { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
   .stat { font-family: var(--mono); font-size: 52px; line-height: 1; color: var(--fg); margin-bottom: 12px; }
   .card p { margin: 0; color: var(--fg-2); font-size: 16px; }
+  .card p + p { margin-top: 10px; }
   .quote {
     margin-top: 26px; font-size: clamp(20px, 2.6vw, 26px); font-weight: 500;
     padding-left: 18px; border-left: 3px solid var(--red);
   }
+  .tagline { font-family: var(--mono); font-size: 12px; color: var(--teal); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  .tagline.amber { color: var(--amber); }
+  .card h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 
   /* comparison */
   .compare { margin-top: 30px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
@@ -147,34 +153,55 @@
     margin-right: -2px;
   }
   .triage { display: grid; grid-template-columns: .8fr 1.5fr 1.5fr .9fr; gap: 14px 30px; align-items: center; }
-  .triage .fall { grid-row: 1 / span 3; }
-  .triage .close { grid-row: 1 / span 3; grid-column: 4; }
+  .triage .fall { grid-row: 1 / span 2; }
+  .triage .close { grid-row: 1 / span 2; grid-column: 4; }
   .triage .cause { grid-column: 2; } .triage .tier { grid-column: 3; }
-  .steps { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .steps { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; counter-reset: s; }
   .step { counter-increment: s; }
   .step::before { content: counter(s, decimal-leading-zero); font-family: var(--mono); color: var(--teal); font-size: 14px; display: block; margin-bottom: 8px; }
-  .steps { counter-reset: s; }
+
+  /* features */
+  .feat { margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .feat .card h3 { display: block; margin-bottom: 8px; }
+  .feat .card .tag-s { display: inline-block; margin-bottom: 10px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--teal); }
+  .feat .card .tag-s.amber { color: var(--amber); }
 
   /* product shots */
-  .shots { margin-top: 34px; display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; align-items: start; }
+  .shots { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; align-items: start; }
   figure { margin: 0; }
   .frame { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--raised); box-shadow: 0 18px 50px rgba(0,0,0,.45); }
   .frame .bar { display: flex; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
   .frame .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
   figcaption { margin-top: 10px; font-size: 14px; color: var(--fg-3); }
 
-  /* hardware */
-  .specs { margin-top: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .specs .card h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-  .tagline { font-family: var(--mono); font-size: 12px; color: var(--teal); letter-spacing: .06em; text-transform: uppercase; }
+  /* under the hood */
+  .rules { margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .rule { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 16px 22px; background: var(--raised); }
+  .rule + .rule { border-top: 1px solid var(--line); }
+  .rule b { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--teal); }
+  .rule span { color: var(--fg-2); font-size: 16px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip { font-family: var(--mono); font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--fg-2); }
+  .pre { margin-top: 12px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: #0b0b0c; font-family: var(--mono); font-size: 13.5px; color: var(--fg-2); overflow-x: auto; line-height: 1.7; }
+  .pre .k { color: var(--teal); }
 
   /* honest */
   .honest .card { border-top: 3px solid var(--teal); }
   .honest .card.sim { border-top-color: var(--amber); }
   .honest .card.not { border-top-color: var(--red); }
-  .honest .card h3 { font-family: var(--mono); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+  .honest .card h3 { display: block; font-family: var(--mono); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
   .honest .card.real h3 { color: var(--teal); } .honest .card.sim h3 { color: var(--amber); } .honest .card.not h3 { color: var(--red); }
-  .fine { margin-top: 18px; color: var(--fg-2); }
+  .honest ul { margin: 0; padding-left: 18px; color: var(--fg-2); font-size: 16px; }
+  .honest li + li { margin-top: 6px; }
+
+  /* faq */
+  .faq { margin-top: 28px; border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); padding: 4px 0; }
+  summary { cursor: pointer; list-style: none; padding: 16px 32px 16px 0; font-weight: 500; font-size: 18px; position: relative; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; position: absolute; right: 4px; top: 12px; font-family: var(--mono); font-size: 22px; color: var(--teal); }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--fg-2); margin: 0 0 18px; max-width: 70ch; }
 
   /* close */
   .closing { text-align: center; padding: 110px 0; }
@@ -192,14 +219,15 @@
   @media (max-width: 860px) {
     section { padding: 64px 0; }
     .links a.hide-m { display: none; }
-    .grid.three, .specs, .steps, .shots, footer .cols { grid-template-columns: 1fr; }
+    .grid.three, .grid.two, .feat, .steps, .shots, footer .cols { grid-template-columns: 1fr; }
     .claim { grid-template-columns: 1fr; }
     .row { grid-template-columns: 1fr; gap: 6px; }
     .row.head { display: none; }
-    .row .what::before, .row .gap::before { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
+    .row .what::before, .row .gap::before, .row .data::before { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
     .row .what::before { content: "Approach"; }
+    .row .data::before { content: "What the data says"; }
     .row .gap::before { content: "Gap it leaves"; }
-    .row .data::before { display: block; content: "What the data says"; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); }
+    .rule { grid-template-columns: 1fr; gap: 4px; }
     .flow { grid-template-columns: 1fr; gap: 30px; }
     .flow .node:not(:last-child)::after { top: auto; bottom: -26px; right: 50%; width: 2px; height: 18px; }
     .flow .node:not(:last-child)::before { top: auto; bottom: -26px; right: calc(50% - 3px); margin: 0; transform: rotate(135deg); }
@@ -222,7 +250,7 @@
     <nav class="links" aria-label="Sections">
       <a class="hide-m" href="#problem">Problem</a>
       <a class="hide-m" href="#how">How it works</a>
-      <a class="hide-m" href="#product">Product</a>
+      <a class="hide-m" href="#features">Features</a>
       <a class="hide-m" href="#hardware">Hardware</a>
       <a class="hide-m" href="#limits">Honest limits</a>
       <a class="btn" href="https://github.com/Arshyi/Steady">GitHub</a>
@@ -240,7 +268,7 @@
     <p class="tag">Steady shortens the wait between a fall and a person at the bedside.</p>
     <div class="cta">
       <a class="btn primary" href="#how">See how it works</a>
-      <a class="btn" href="#product">See the dashboard</a>
+      <a class="btn" href="#features">See what it does</a>
     </div>
     <p class="src">Mayes et al., JAMDA 2026 · 212 falls</p>
   </div>
@@ -282,13 +310,12 @@
     <h2>Three claims, each measurable</h2>
     <div class="claims">
       <div class="claim"><div>83% of lone fallers never pressed the alarm.</div><div>The board detects the fall. 45 s of stillness raises the top tier by itself.</div></div>
-      <div class="claim"><div>72–99% of alarms are false, so staff delay or disable them.</div><div>Not another siren: every fall is sorted by urgency.</div></div>
-      <div class="claim"><div>An acknowledgement is treated as “handled”.</div><div>It drops to the lowest tier and still needs a visit. Only staff “Mark checked” closes it.</div></div>
+      <div class="claim"><div>72–99% of alarms are false, so staff delay or disable them.</div><div>Not another siren: every open fall is ranked by urgency.</div></div>
+      <div class="claim"><div>A fall that nobody confirms can quietly drop off a list.</div><div>A fall never closes on its own. Staff mark it checked, or a worker presses the wearable’s button at the bedside.</div></div>
     </div>
-    <div class="legend" aria-label="Urgency tiers, highest first">
+    <div class="legend" aria-label="Urgency of an open fall, highest first">
       <span class="pill"><i class="dot red"></i>No movement since the fall</span>
-      <span class="pill"><i class="dot amber"></i>Not acknowledged yet</span>
-      <span class="pill"><i class="dot teal"></i>Says they’re OK</span>
+      <span class="pill"><i class="dot amber"></i>No worker yet</span>
     </div>
     <p class="src">Tiers as the dashboard shows them, highest first</p>
   </div>
@@ -312,24 +339,36 @@
     <div class="triage">
       <div class="node grey fall"><b>Fall</b></div>
       <div class="node red cause"><b>Still 45 s</b></div><div class="node red tier"><b>No movement since the fall</b></div>
-      <div class="node amber cause"><b>No response</b></div><div class="node amber tier"><b>Not acknowledged yet</b></div>
-      <div class="node cause"><b>Button press</b></div><div class="node tier"><b>Says they’re OK</b></div>
-      <div class="node close"><b>Mark checked</b><small>staff close it</small></div>
+      <div class="node amber cause"><b>No worker yet</b></div><div class="node amber tier"><b>Needs a response</b></div>
+      <div class="node close"><b>Handled tonight</b><small>Mark checked, or a worker’s button press</small></div>
     </div>
 
     <div class="steps">
       <div class="card step"><h3>Detect</h3><p>The board watches for weightlessness, then a hard impact, then a change of posture, and decides on the device.</p></div>
-      <div class="card step"><h3>Rank</h3><p>Every fall lands on one Alerts list, highest urgency first. The highest tier wins even after a press: lying still matters more than pressing a button.</p></div>
-      <div class="card step"><h3>Close</h3><p>A fall stays until staff mark it checked on the dashboard, or tap an NFC tag at the bedside. “I’m OK” only moves it down the list.</p></div>
+      <div class="card step"><h3>Rank</h3><p>Every open fall sits on one Alerts list, highest urgency first. Movement has to come from the wearer’s own device, so demo data can’t clear the top tier.</p></div>
+      <div class="card step"><h3>Close</h3><p>A fall stays until staff click “Mark checked”, or a worker presses the button on the wearable. It then moves to “Handled tonight”, and Undo reopens it.</p></div>
     </div>
   </div>
 </section>
 
-<section id="product">
+<section id="features">
   <div class="wrap">
     <p class="kicker">Product</p>
-    <h2>One screen for the whole night shift</h2>
-    <p class="lede">Staff see who needs a response, who is asleep, and whose device needs attention. Each resident has a page with movement through the night.</p>
+    <h2>What Steady does</h2>
+    <p class="lede">One screen for the whole night shift, and a small device on each resident. Here is what the dashboard shows and what staff can do with it.</p>
+
+    <div class="feat">
+      <div class="card"><h3>The whole wing at a glance</h3><p>Every resident is shown as asleep, up, needs a check, or fallen, with the count at the top: “8 residents · 4 asleep · 2 up · 1 needs a check · 1 fall”.</p></div>
+      <div class="card"><h3>One Alerts list</h3><p>Falls, checks and device problems in urgency order, with tabs for All, Falls, Checks and Devices. Each has a clear action: Mark checked, Acknowledge or Done, and Undo if it was a mistake.</p></div>
+      <div class="card"><h3>A page for every resident</h3><p>Heart rate and tonight’s range, time since the last movement, battery, signal, and movement per half hour drawn from the gyroscope.</p></div>
+      <div class="card"><h3>Restlessness checks</h3><p>Someone who has been moving a lot for a sustained spell is flagged as “Restless for the last 20 min”, so staff can look in before it becomes a fall.</p></div>
+      <div class="card"><h3>Device health, before it’s missed</h3><p>Low battery, weak signal and a device that has stopped syncing each raise their own alert, so a flat wearable doesn’t look like a quiet resident.</p></div>
+      <div class="card"><span class="tag-s amber">Optional</span><h3>Staff accounts</h3><p>Staff log in through Auth0. A care home registers once, which creates its first administrator. Administrators invite caretakers by email, change roles and remove staff. Login is off until Auth0 is configured.</p></div>
+      <div class="card"><h3>Setup in the Settings page</h3><p>Pick Simulated or Live data, connect a wearable over Wi-Fi or USB, run a self-test (sending data, accelerometer reads gravity, gyroscope responds, fall detection fires), and pair the device to a resident.</p></div>
+      <div class="card"><h3>Demo a fall</h3><p>In Simulated mode, send a fall for any resident with one click, so the whole alert flow can be shown without hurting anyone or needing the hardware.</p></div>
+      <div class="card"><span class="tag-s amber">Experimental</span><h3>Room-level location</h3><p>Three presses on the wearable start survey mode, which fingerprints the Wi-Fi in a room so a device can later be placed in a room, not at an exact position. Scanning does not yet run on the board.</p></div>
+    </div>
+
     <div class="shots">
       <figure>
         <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="assets/dashboard-alerts.png" width="2200" height="1520" alt="The Alerts page. A fall for room 103 is at the top with the badge No movement since the fall and a Mark checked button, above a check for room 105 and two device alerts." loading="lazy"></div>
@@ -339,6 +378,16 @@
         <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="assets/dashboard-resident.png" width="2200" height="1520" alt="A resident page showing heart rate, time since last movement, battery, signal, and a movement chart for the night." loading="lazy"></div>
         <figcaption>Resident view: movement per half hour from the gyroscope, plus device health.</figcaption>
       </figure>
+      <figure>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i></div><img src="assets/dashboard-settings.png" width="2200" height="1520" alt="The Settings page with a choice between Simulated and Live devices, a Demo a fall control, and buttons to connect a wearable over Wi-Fi or USB." loading="lazy"></div>
+        <figcaption>Settings: choose the data source, connect a wearable and pair it to a resident.</figcaption>
+      </figure>
+      <div class="card" style="align-self:stretch">
+        <h3>Try it without a board</h3>
+        <p>Switch Settings to <b>Simulated</b> and the server generates readings for every resident. Press <b>Demo a fall</b> to watch a fall arrive, get ranked and be closed.</p>
+        <p>No hardware? <b>Try a demo device</b> streams a built-in wearable so you can check the connection and the self-test.</p>
+        <div class="pre"><span class="k">npm</span> install<br><span class="k">npm</span> run dev</div>
+      </div>
     </div>
     <p class="src">Screenshots show Simulated mode. The residents, heart rate, battery and signal are demo values.</p>
   </div>
@@ -348,13 +397,37 @@
   <div class="wrap">
     <p class="kicker">Hardware</p>
     <h2>A real board and a real sensor</h2>
-    <div class="specs">
+    <div class="grid two" style="margin-top:30px">
       <div class="card"><h3>Arduino UNO Q <span class="tagline">Board</span></h3><p>Runs the fall detector on the device itself, not in the cloud. It has Wi-Fi, 4 GB of RAM and 32 GB of storage on board.</p></div>
-      <div class="card"><h3>MPU6050 <span class="tagline">Sensor</span></h3><p>A real accelerometer and gyroscope, read over I2C at 200 Hz so a landing spike is not missed between samples.</p></div>
-      <div class="card"><h3>USB or Wi-Fi <span class="tagline">Link</span></h3><p>Readings reach the dashboard over USB serial, or through a relay app on the board over the network.</p></div>
-      <div class="card"><h3>Button and NFC <span class="tagline">Acknowledge</span></h3><p>One press says “I’m OK”. A staff tap on an NFC tag records a visit. Neither one hides the fall.</p></div>
+      <div class="card"><h3>MPU6050 <span class="tagline">Sensor</span></h3><p>A real accelerometer and gyroscope, read over I2C and checked every 5 ms so a landing spike is not missed between samples. It connects to the board with just a few wires: power, ground, data and clock.</p></div>
+      <div class="card"><h3>USB or Wi-Fi <span class="tagline">Link</span></h3><p>Over USB the dashboard reads the board straight from the browser (Chrome or Edge). Over Wi-Fi, a relay app on the board streams readings to the dashboard and posts one-second summaries to the server. The relay has been run on the board, streaming about 48 samples a second.</p></div>
+      <div class="card"><h3>One button <span class="tagline">Acknowledge</span></h3><p>One press by a worker at the bedside confirms they responded and resolves the open fall. Three presses start survey mode. Two presses are ignored as a fumbled double tap.</p></div>
     </div>
     <p class="fine">Open source. Firmware, relay, server and dashboard are all in the <a href="https://github.com/Arshyi/Steady">GitHub repository</a>.</p>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="wrap">
+    <p class="kicker">Under the hood</p>
+    <h2>How a fall is detected</h2>
+    <p class="lede">The rules run on the board and were tested on deliberate drops. They look for the shape of a fall, not just a bump.</p>
+    <div class="rules">
+      <div class="rule"><b>Weightless</b><span>The total acceleration drops below 0.60 g, which means nothing is holding the wearer up.</span></div>
+      <div class="rule"><b>Impact</b><span>Then a spike over 1.8 g within 1.2 seconds of that.</span></div>
+      <div class="rule"><b>Settle</b><span>After 250 ms for the bounce to die down, the board checks the result.</span></div>
+      <div class="rule"><b>Confirm</b><span>A posture change of 40° or more confirms the fall. An impact of 3.0 g or more counts even if it lands flat.</span></div>
+      <div class="rule"><b>Soft drops</b><span>A soft drop that lands flat is not counted.</span></div>
+    </div>
+    <p class="fine">The sensor is read over a ±8 g range every 5 ms. The alert tells staff what the device measured, for example “Fall detected by the device: peak 2.2 g, posture change 89°”.</p>
+
+    <h2 style="margin-top:54px">Where the data goes</h2>
+    <div class="grid two" style="margin-top:24px">
+      <div class="card"><h3>From board to dashboard</h3><p>The board sends plain text lines: its id and firmware, battery, one motion sample (acceleration in g, rotation in degrees a second), a fall with its peak and tilt, and a worker’s button press. Two example lines:</p><div class="pre"><span class="k">M</span>,0.021,-0.004,1.003,0.4,-0.2,0.1<br><span class="k">F</span>,2.2,89,90</div></div>
+      <div class="card"><h3>The server</h3><p>Batches of 10 to 200 samples a second are folded into one reading per second for the dashboard. The server keeps readings, alerts and pairings in a local store, or in Databricks when it is configured. A device token can protect the uplink.</p></div>
+      <div class="card"><h3>The Worker</h3><p>A separate Cloudflare Worker with a D1 database handles device ingest, server-side fall analysis and the Wi-Fi survey store. Ingest is idempotent, so a resent sample doesn’t count twice. Samples are kept for 30 days.</p></div>
+      <div class="card"><h3>The stack</h3><p>Every piece is open source and in one repository.</p><div class="chips"><span class="chip">Arduino UNO Q</span><span class="chip">MPU6050</span><span class="chip">Zephyr sketch</span><span class="chip">Python relay</span><span class="chip">WebSocket</span><span class="chip">Node server</span><span class="chip">React + Vite</span><span class="chip">Databricks</span><span class="chip">Cloudflare Workers + D1</span><span class="chip">Auth0</span></div></div>
+    </div>
   </div>
 </section>
 
@@ -363,12 +436,28 @@
     <p class="kicker">Viability</p>
     <h2>Real hardware, honest limits</h2>
     <div class="grid three" style="margin-top:28px">
-      <div class="card real"><h3>Real today</h3><p>MPU6050 on the UNO Q, fall detection on the board (verified with drops), readings to dashboard to alerts, pairing, Wi-Fi relay, three-tier triage.</p></div>
-      <div class="card sim"><h3>Simulated, and labelled</h3><p>Heart rate, battery, signal, and the other residents, shown only in Simulated mode.</p></div>
-      <div class="card not"><h3>Not proven yet</h3><p>Detection tuned on drops, not people. Databricks not run end to end. The dashboard API is open unless Auth0 staff login is configured.</p></div>
+      <div class="card real"><h3>Real today</h3><ul><li>MPU6050 on the UNO Q.</li><li>Fall detection on the board, tested with drops.</li><li>Readings to dashboard to alerts, pairing.</li><li>USB link, and a Wi-Fi relay streamed from the board.</li><li>Urgency ranking of open falls.</li></ul></div>
+      <div class="card sim"><h3>Simulated, and labelled</h3><ul><li>Heart rate, battery and signal.</li><li>The other residents, shown only in Simulated mode.</li><li>Live mode lists only residents with a paired wearable.</li></ul></div>
+      <div class="card not"><h3>Not proven yet</h3><ul><li>Detection is tuned on drops, not on people.</li><li>Databricks has not run end to end.</li><li>Staff login is optional and off by default.</li><li>No retention or export policy for server data.</li><li>Wi-Fi room scanning does not yet run on the board.</li></ul></div>
     </div>
     <p class="fine">A threshold, not a certified detector. No measured false-positive rate yet.</p>
-    <p class="fine"><b>Next:</b> label real falls and measure false positives, then a staff bedside tap that records a visit.</p>
+    <p class="fine"><b>Next:</b> label real falls and measure false positives, then decide board placement, battery, enclosure and data retention.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <p class="kicker">Questions</p>
+    <h2>Questions people ask</h2>
+    <div class="faq">
+      <details><summary>Does it replace night staff?</summary><p>No. It tells staff who to see first. The point is to shorten the time between a fall and a person arriving, not to remove the person.</p></details>
+      <details><summary>What if the resident can’t press anything?</summary><p>They don’t need to. The wearable detects the fall itself. If nobody has moved for 45 seconds after the fall, it moves to the top of the list on its own.</p></details>
+      <details><summary>Can an alert disappear by itself?</summary><p>No. A fall stays on the Alerts page until staff click Mark checked or a worker presses the button on the wearable. Undo reopens it if it was a mistake.</p></details>
+      <details><summary>What does it measure?</summary><p>Movement from an accelerometer and gyroscope. Heart rate, battery and signal are shown in the dashboard but are simulated for now.</p></details>
+      <details><summary>Who can see resident data?</summary><p>Staff who log in, once Auth0 is configured: each care home has its own administrators and caretakers. Without it the dashboard is open, so it should only be used with demo data on a trusted network.</p></details>
+      <details><summary>Is it a medical device?</summary><p>No. It is a hackathon prototype and must not be relied on to detect falls or to replace care staff. The fall detector is a threshold, not a certified detector.</p></details>
+      <details><summary>Can I try it?</summary><p>Yes. It is open source. Run <code>npm install</code> then <code>npm run dev</code> and switch Settings to Simulated, no board needed. The <a href="https://github.com/Arshyi/Steady">GitHub repository</a> has the instructions.</p></details>
+    </div>
   </div>
 </section>
 
